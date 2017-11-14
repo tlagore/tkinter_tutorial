@@ -6,6 +6,7 @@ class Navbar(tk.Frame):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         self.initialize()
+
     def initialize(self):
         pass
 
@@ -14,20 +15,19 @@ class Toolbar(tk.Frame):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         self.initialize()
+
     def initialize(self):
-        pass
+        self.grid(row=0, sticky="ew")
 
 class Statusbar(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
-        self.label = tk.Label(self, bd=1, relief=tk.SUNKEN, anchor=tk.W)
-        self.label.pack(fill=tk.X)
-        
         self.initialize()
     
     def initialize(self):
-        pass # initialize a window
+        self.grid(row=3, sticky="ew")
+        self.label = tk.Label(self, bd=1, relief=tk.SUNKEN, anchor=tk.W)
 
     def set(self, txt, *args):
         self.label.config(text=txt)
@@ -44,31 +44,44 @@ class Main(tk.Frame):
         self.initialize()
     
     def callback(self):
-        name = tkfd.askopenfilename()
+        name = tkfd.askdirectory()
         print(name)
     
     def initialize(self):
-        self.fButton = tk.Button(text='File Open', command=self.callback).pack(fill=tk.X)
-
+        self.grid(row=2, sticky="nsew")
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.src_lbl = tk.Label(self.parent, text="Source Folder", bg="red")
+        self.src_lbl.grid(sticky="e")
+        self.exe_lbl = tk.Label(self.parent, text="Program", bg="yellow")
+        self.exe_lbl.grid(sticky="e")
+        self.dst_lbl = tk.Label(self.parent, text="Destination", bg="green") 
+        self.dst_lbl.grid(sticky="e")
+        
+        
+        #self.fButton = tk.Button(text='File Open', command=self.callback).pack()
 
 class MainApplication(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         self.frame = tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
-        self.statusbar = Statusbar(self)
-        self.toolbar = Toolbar(self)
+        self.initialize()
+
+    def initialize(self):
+        self.grid(row=0, column=0, sticky="nsew")
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.main = Main(self, bg="purple")
+        self.statusbar = Statusbar(self, bg="orange")
+        self.toolbar = Toolbar(self, bg="blue")
         self.navbar = Navbar(self)
-        self.main = Main(self)
+        
+        
 
-        self.toolbar.pack(side="top", fill="x")
-        self.navbar.pack(side="left", fill="y")
-        self.main.pack(side="right", fill="both", expand=True)
-
-        self.statusbar.set("wololo")
-
-def windowszpos(root):
-    w = 1200
-    h = 700
+def window_config(root):
+    #center window and lock dimensions
+    w = 800
+    h = 500
 
     ws = root.winfo_screenwidth()
     hs = root.winfo_screenheight()
@@ -79,9 +92,13 @@ def windowszpos(root):
     root.geometry('%dx%d+%d+%d' % (w,h,x,y))
     root.resizable(width=False, height=False)
 
+    root.grid_rowconfigure(1, weight=1)
+    root.grid_columnconfigure(0, weight=1)
+
+    root.winfo_toplevel().title("MIA")
 
 if __name__ == "__main__":
     root = tk.Tk()
-    MainApplication(root).pack(side="top", fill="both", expand=True)
-    windowszpos(root)
+    window_config(root)
+    MainApplication(root, bg='cyan')
     root.mainloop()
