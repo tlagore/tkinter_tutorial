@@ -105,9 +105,9 @@ class MainApplication(tk.Frame):
     def add_src_folder(self):
         folder_name = tkfd.askdirectory()
         if(folder_name):
-            #for item
-            # TODO need to check for duplicate entry 
-            self.src_list.insert(END, folder_name)
+            srcs = self.src_list.get(0, END)
+            if folder_name not in srcs:
+                self.src_list.insert(END, folder_name)
         else:
             print("No folder selected!")
 
@@ -182,6 +182,15 @@ class MainApplication(tk.Frame):
         #could probably just call start then stop
 
     def initialize(self):
+        self.grid(sticky="nesw")
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.columnconfigure(1, weight=1)
+
+        for i in range(0, 15):
+            self.rowconfigure(i, weight=1)
+        
+
         self.main_lbl = tk.Label(self, text="Mama Mia!")
         self.main_lbl.grid(row=0, column=0, columnspan=3)
         self.main_lbl.config(font=("Garamond", 36))
@@ -233,10 +242,10 @@ class MainApplication(tk.Frame):
         ### start pick_exe section ###
         self.exe_lbl = tk.Label(self, text="ReAdW.exe Location")
         self.exe_lbl.configure(background=self["bg"])
-        self.exe_lbl.grid(row=4, column = 0, padx=20, pady=(0,0), sticky=W)
+        self.exe_lbl.grid(row=4, column = 0, padx=20, pady=(0,0), sticky="ew")
 
         self.exe_field = tk.Text(self, height=self.btn_height, width=50, state="disabled")
-        self.exe_field.grid(row=5, column=0, columnspan=1, padx=20, sticky="w")
+        self.exe_field.grid(row=5, column=0, columnspan=1, padx=20, sticky="ew")
         self.exe_field.configure(background="lightgray")
 
         self.pick_exe_btn = tk.Button(
@@ -254,7 +263,7 @@ class MainApplication(tk.Frame):
         self.dst_lbl.grid(row=7, column=0, columnspan=2, padx=20, pady=0, sticky="w")
 
         self.dst_field = tk.Text(self, height=self.btn_height, width=50, state="disabled")
-        self.dst_field.grid(row=8, column = 0, columnspan=1, padx=20, pady=(0,20), sticky="w")
+        self.dst_field.grid(row=8, column = 0, columnspan=1, padx=20, pady=(0,20), sticky="ew")
         self.dst_field.configure(background="lightgray")
 
         self.pick_dst_btn = tk.Button(
@@ -318,7 +327,11 @@ class MainApplication(tk.Frame):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    MainApplication(root).grid(stick="nesw")
+
+    #let child elements resize
+    root.columnconfigure(0, weight=1)
+    root.rowconfigure(0, weight=1)
+    MainApplication(root).grid(sticky="nesw")
 
     root.winfo_toplevel().title("MIA")
     root.update()
