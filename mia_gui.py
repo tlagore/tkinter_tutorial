@@ -3,9 +3,99 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog as tkfd
 from tkinter.ttk import Style
-from tkinter import ttk
+from time import time, localtime, strftime
 
 
+#############################################################################################
+# Tooltip class taken from http://code.activestate.com/recipes/576688-tooltip-for-tkinter/  #
+# Written by Pete Garcin, github: rawktron                                                  #
+#############################################################################################
+class ToolTip( Toplevel ):
+    """
+    Provides a ToolTip widget for Tkinter.
+    To apply a ToolTip to any Tkinter widget, simply pass the widget to the
+    ToolTip constructor
+    """ 
+    def __init__( self, wdgt, msg=None, msgFunc=None, delay=1, follow=True ):
+        """
+        Initialize the ToolTip
+        
+        Arguments:
+          wdgt: The widget this ToolTip is assigned to
+          msg:  A static string message assigned to the ToolTip
+          msgFunc: A function that retrieves a string to use as the ToolTip text
+          delay:   The delay in seconds before the ToolTip appears(may be float)
+          follow:  If True, the ToolTip follows motion, otherwise hides
+        """
+        self.wdgt = wdgt
+        self.parent = self.wdgt.master                                          # The parent of the ToolTip is the parent of the ToolTips widget
+        Toplevel.__init__( self, self.parent, bg='black', padx=1, pady=1 )      # Initalise the Toplevel
+        self.withdraw()                                                         # Hide initially
+        self.overrideredirect( True )                                           # The ToolTip Toplevel should have no frame or title bar
+        
+        self.msgVar = StringVar()                                               # The msgVar will contain the text displayed by the ToolTip        
+        if msg == None:                                                         
+            self.msgVar.set( 'No message provided' )
+        else:
+            self.msgVar.set( msg )
+        self.msgFunc = msgFunc
+        self.delay = delay
+        self.follow = follow
+        self.visible = 0
+        self.lastMotion = 0
+        Message( self, textvariable=self.msgVar, bg='#FFFFDD',
+                 aspect=1000 ).grid()                                           # The test of the ToolTip is displayed in a Message widget
+        self.wdgt.bind( '<Enter>', self.spawn, '+' )                            # Add bindings to the widget.  This will NOT override bindings that the widget already has
+        self.wdgt.bind( '<Leave>', self.hide, '+' )
+        self.wdgt.bind( '<Motion>', self.move, '+' )
+        
+    def spawn( self, event=None ):
+        """
+        Spawn the ToolTip.  This simply makes the ToolTip eligible for display.
+        Usually this is caused by entering the widget
+        
+        Arguments:
+          event: The event that called this funciton
+        """
+        self.visible = 1
+        self.after( int( self.delay * 1000 ), self.show )                       # The after function takes a time argument in miliseconds
+        
+    def show( self ):
+        """
+        Displays the ToolTip if the time delay has been long enough
+        """
+        if self.visible == 1 and time() - self.lastMotion > self.delay:
+            self.visible = 2
+        if self.visible == 2:
+            self.deiconify()
+            
+    def move( self, event ):
+        """
+        Processes motion within the widget.
+        
+        Arguments:
+          event: The event that called this function
+        """
+        self.lastMotion = time()
+        if self.follow == False:                                                # If the follow flag is not set, motion within the widget will make the ToolTip dissapear
+            self.withdraw()
+            self.visible = 1
+        self.geometry( '+%i+%i' % ( event.x_root+10, event.y_root+10 ) )        # Offset the ToolTip 10x10 pixes southwest of the pointer
+        try:
+            self.msgVar.set( self.msgFunc() )                                   # Try to call the message function.  Will not change the message if the message function is None or the message function fails
+        except:
+            pass
+        self.after( int( self.delay * 1000 ), self.show )
+            
+    def hide( self, event=None ):
+        """
+        Hides the ToolTip.  Usually this is caused by leaving the widget
+        
+        Arguments:
+          event: The event that called this function
+        """
+        self.visible = 0
+        self.withdraw()
 
 class MainApplication(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -40,15 +130,19 @@ class MainApplication(tk.Frame):
             self.exe_field.configure(state="normal")
             #text box index location is noted by "row.column"
             self.exe_field.insert("0.0", str(file_name.name))
+            ToolTip(self.exe_field, str(file_name.name))
             self.exe_field.configure(state="disabled")
 
     def pick_dst_btn_clicked(self):
         """ """
         folder_name = tkfd.askdirectory()
         if(folder_name):
-            #for item
-            # TODO need to check for duplicate entry 
+            #enable textbox to allow insertion            
+            self.dst_field.configure(state="normal")
             self.dst_field.insert("0.0", str(folder_name))
+            ToolTip(self.dst_field, str(folder_name))
+            #disable to prevent direct user input
+            self.dst_field.configure(state="disabled")
         else:
             print("No folder selected!")
     
@@ -106,6 +200,7 @@ class MainApplication(tk.Frame):
 
         self.exe_field = tk.Text(self, height=self.btn_height, width=50, state="disabled")
         self.exe_field.grid(row=5, column=0, columnspan=1, padx=20, sticky="w")
+        self.exe_field.configure(background="lightgray")
 
         self.pick_exe_btn = tk.Button(
             self, text="Choose Location", width=15, command=self.choose_readw_loc
@@ -123,6 +218,7 @@ class MainApplication(tk.Frame):
 
         self.dst_field = tk.Text(self, height=self.btn_height, width=50, state="disabled")
         self.dst_field.grid(row=8, column = 0, columnspan=1, padx=20, pady=(0,20), sticky="w")
+        self.dst_field.configure(background="lightgray")
 
         self.pick_dst_btn = tk.Button(
             self, text="Choose Destination", width=15, command=self.pick_dst_btn_clicked
