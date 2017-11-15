@@ -184,34 +184,21 @@ class MainApplication(tk.Frame):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    #window_config(root)
     MainApplication(root).grid(stick="nesw")
-    """
-    root.grid_rowconfigure(0, weight=1)
-    root.grid_columnconfigure(0, weight=1)
-    root.grid_rowconfigure(1, weight=1)
-    root.grid_columnconfigure(1, weight=1)
-    root.grid_rowconfigure(1, weight=1)
-    root.grid_columnconfigure(1, weight=1)
-    """
 
     root.winfo_toplevel().title("MIA")
-    #uncomment if we make window resizable
-    #set min width/height to current width/height
     root.update()
-    #unecessary as window is not resizable, but if we remove resizable, window cant be smaller than default
-    #root.minsize(root.winfo_width(), root.winfo_height())
 
-    #ws = root.winfo_screenwidth()
-    #hs = root.winfo_screenheight()
+    ws = root.winfo_screenwidth()
+    hs = root.winfo_screenheight()
 
-    #w = root.winfo_width()
-    #h = root.winfo_height()
+    w = root.winfo_width()
+    h = root.winfo_height()
 
-    #x = (ws/2) - (w/2)
-    #y = (hs/2) - (h/2)
+    x = (ws/2) - (w/2)
+    y = (hs/2) - (h/2)
 
-    #root.geometry('%dx%d+%d+%d' % (w,h,x,y))
+    root.geometry('%dx%d+%d+%d' % (w,h,x,y))
     root.resizable(False, False)
 
     root.mainloop()
