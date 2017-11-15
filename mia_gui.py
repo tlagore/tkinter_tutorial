@@ -159,6 +159,28 @@ class MainApplication(tk.Frame):
             #paralellize is unchecked
             print("THROTTLE BACK AAAHHHH")
 
+    def stop_mia(self):
+        """ """
+        self.stop_btn.configure(state="disabled")
+        self.restart_btn.configure(state="disabled")
+        #do mia stop
+        self.start_btn.configure(state="normal")
+
+    def start_mia(self):
+        """ """
+        self.start_btn.configure(state="disabled")
+        #do mia start
+        #read new config variables and start up
+        self.stop_btn.configure(state="normal")
+        self.restart_btn.configure(state="normal")
+
+    def restart_mia(self):
+        """ """
+        print("Restart!")
+        #do mia restart
+        #read new config variables
+        #could probably just call start then stop
+
     def initialize(self):
         self.main_lbl = tk.Label(self, text="Mama Mia!")
         self.main_lbl.grid(row=0, column=0, columnspan=3)
@@ -260,20 +282,21 @@ class MainApplication(tk.Frame):
         self.parallel_chkbx = tk.Checkbutton(self.parallel_frame, variable=self.parallelize, command=self.parallelize_checked)
         self.parallel_chkbx.grid(row=0, column=1, padx=(10,10))
 
-        ### start control button settings ###        
+        ### start control button settings ###
+        ### Set a new frame to hold all 3 buttons, this frame will span all 3 columns of the main application ###
         self.ctrl_frame = tk.Frame(self, highlightbackground='darkgray', highlightcolor='darkgray', highlightthickness=1)
         self.ctrl_frame.grid(row=11, column=0, columnspan=3, pady=(0,20))
 
         ### default to disabled, enable when stop is pressed ###
         self.start_btn = tk.Button(
-            self.ctrl_frame, text="Start Mia", width=15, command=None, state="disabled"
+            self.ctrl_frame, text="Start Mia", width=15, command=self.start_mia, state="disabled"
         )
 
         self.stop_btn = tk.Button(
-            self.ctrl_frame, text="Stop Mia", width=15, command=None
+            self.ctrl_frame, text="Stop Mia", width=15, command=self.stop_mia
         )
         self.restart_btn = tk.Button(
-            self.ctrl_frame, text="Restart Mia", width=15, command=None
+            self.ctrl_frame, text="Restart Mia", width=15, command=self.restart_mia
         )
 
         self.start_btn.grid(row=0, column=0, columnspan=1, padx=(50,40), pady=(20,20))
