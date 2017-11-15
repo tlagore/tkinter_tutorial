@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog as tkfd
-from tkinter.ttk import Style
 from time import time, localtime, strftime
 
 
@@ -146,10 +145,26 @@ class MainApplication(tk.Frame):
         else:
             print("No folder selected!")
     
+    def interval_val_changed(self, value):
+        """ """
+        ## set val in settings
+        print(value)
+
+    def parallelize_checked(self):
+        """ """
+        if self.parallelize.get():
+            #paralellize is checked
+            print("RAGE IT!")
+        else:
+            #paralellize is unchecked
+            print("THROTTLE BACK AAAHHHH")
+
     def initialize(self):
         self.main_lbl = tk.Label(self, text="Mama Mia!")
         self.main_lbl.grid(row=0, column=0, columnspan=3)
         self.main_lbl.config(font=("Garamond", 36))
+
+        self.parallelize = tk.IntVar()
 
         #### SOURCE FOLDER WIDGETS & BUTTONS #####
         self.src_lbl = tk.Label(self, text="Source Folders")
@@ -231,7 +246,7 @@ class MainApplication(tk.Frame):
         self.interval_lbl.configure(background=self["bg"])
         self.interval_lbl.grid(row=9, column=0, columnspan=2, padx=20, pady=0, sticky="w")
 
-        self.interval_slider = tk.Scale(self, from_=5, to=45, orient=HORIZONTAL)
+        self.interval_slider = tk.Scale(self, from_=5, to=45, orient=HORIZONTAL, command=self.interval_val_changed)
         self.interval_slider.grid(row=10, column=0, padx=20, pady=(0,20), sticky="ew")
 
         ### end interval section ###
@@ -242,7 +257,7 @@ class MainApplication(tk.Frame):
         self.parallel_lbl = tk.Label(self.parallel_frame, text="Parallelize")
         self.parallel_lbl.grid(row=0, column=0, padx=(0,10))
 
-        self.parallel_chkbx = tk.Checkbutton(self.parallel_frame)
+        self.parallel_chkbx = tk.Checkbutton(self.parallel_frame, variable=self.parallelize, command=self.parallelize_checked)
         self.parallel_chkbx.grid(row=0, column=1, padx=(10,10))
 
         ### start control button settings ###        
