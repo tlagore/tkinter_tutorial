@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog as tkfd
 from time import time, localtime, strftime
+import datetime
 
 
 #############################################################################################
@@ -163,6 +164,7 @@ class MainApplication(tk.Frame):
         """ """
         self.stop_btn.configure(state="disabled")
         self.restart_btn.configure(state="disabled")
+        self.update_status("Just as I was ... learning ... to love.... (shutting down)")        
         #do mia stop
         self.start_btn.configure(state="normal")
 
@@ -171,15 +173,21 @@ class MainApplication(tk.Frame):
         self.start_btn.configure(state="disabled")
         #do mia start
         #read new config variables and start up
+        self.update_status("Booting up!")
         self.stop_btn.configure(state="normal")
         self.restart_btn.configure(state="normal")
 
     def restart_mia(self):
         """ """
-        print("Restart!")
+        self.update_status("Restarting!")
         #do mia restart
         #read new config variables
         #could probably just call start then stop
+
+    def update_status(self, msg):
+        """ """
+        msg = datetime.datetime.fromtimestamp(time()).strftime('%Y-%m-%d %H:%M:%S - ') + msg
+        self.status_list_box.insert(0, msg)
 
     def initialize(self):
         self.grid(sticky="nesw")
@@ -298,14 +306,14 @@ class MainApplication(tk.Frame):
 
         ### default to disabled, enable when stop is pressed ###
         self.start_btn = tk.Button(
-            self.ctrl_frame, text="Start Mia", width=15, command=self.start_mia, state="disabled"
+            self.ctrl_frame, text="Start Mia", width=15, command=self.start_mia, 
         )
 
         self.stop_btn = tk.Button(
-            self.ctrl_frame, text="Stop Mia", width=15, command=self.stop_mia
+            self.ctrl_frame, text="Stop Mia", width=15, command=self.stop_mia, state="disabled"
         )
         self.restart_btn = tk.Button(
-            self.ctrl_frame, text="Restart Mia", width=15, command=self.restart_mia
+            self.ctrl_frame, text="Restart Mia", width=15, command=self.restart_mia, state="disabled"
         )
 
         self.start_btn.grid(row=0, column=0, columnspan=1, padx=(50,40), pady=(20,20))
